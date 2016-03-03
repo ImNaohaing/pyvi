@@ -4,6 +4,9 @@ from PIL import Image
 import numpy as np
 import matplotlib.pyplot as plt
 
+''' -- SIFT scale invariant feature transform --
+http://en.wikipedia.org/wiki/Scale-invariant_feature_transform
+'''
 def process_image(imagename, resultname, params='--edge-thresh 10 --peak-thresh 5'):
     '''
     Process an image and save the results in a file
@@ -127,6 +130,66 @@ def match_twosided(desc1, desc2):
             matches_12[n] = 0
 
     return matches_12
+
+def appendimages(im1, im2):
+    """ Return a new image that appends the two images side-by-side. """
+    # select the image with the fewest rows and fill in enough empty rows
+    rows1 = im1.shape[0]
+    rows2 = im2.shape[0]
+    if rows1 < rows2:
+        im1 = np.concatenate((im1, np.zeros((rows2-rows1, im1.shape[1]))), axis=0)
+    elif rows1 > rows2:
+        im2 = np.concatenate((im2, np.zeros((rows1-rows2, im2.shape[1]))), axis=0)
+    # if none of these cases they are equal, no filling needed.
+    return np.concatenate((im1, im2), axis=1)
+
+def plot_matches3(im1, im2, locs1, locs2, matchscores, show_below=True):
+    """ Show a figure with lines joining the accepted matches
+    input: im1,im2 (images as arrays), locs1,locs2 (feature locations),
+    matchscores (as output from 'match()'),
+    show_below (if images should be shown below matches). """
+    im3 = appendimages(im1, im2)
+    cols1 = im1.shape[1]
+    rowsmax = np.maximum(im1.shape[0], im2.shape[0])
+    plt.plot([p[0] for p in locs1], [p[1] for p in locs1], 'o')
+    plt.plot([p[0]+cols1 for p in locs2], [p[1] for p in locs2], 'o')
+    if show_below:
+        im3 = np.vstack((im3, im3, im3))
+        plt.imshow(im3)
+        for i, m in enumerate(matchscores):
+            if m > 0:
+                plt.plot([locs1[i][0], locs2[m][0] + cols1], [locs1[i][1]+rowsmax, locs2[m][1]+rowsmax], 'c')
+                plt.axis('off')
+
+
+def plot_matches_show3(ims, locs, matchscores):
+    '''
+    Show figures with lines joining the matches points
+    :param ims: list of arrays(numpy array shapes) of images
+    :param locs: list of locations(numpy array shapes) of interesting points
+    :param matchscores: list of matching points(numpy array shapes) index
+    :return:
+    '''
+    if ims.count < 2:
+        raise RuntimeError('number of comparing images should bigger than one')
+    imall = ims[0]
+    for i in range(1, len(ims)):
+        imall = appendimages(imall, ims[i])
+
+    shapes = np.array([im.shape for im in ims])
+    rowsmax = np.max([shape[0] for shape in shapes])
+    imall = np.vstack((imall, imall, imall))
+    plt.imshow(imall)
+    # plot points
+    for i, loc in enumerate(locs):
+        plt.plot([p[0]+sum(shapes[:i, 1]) for p in loc], [p[1] for p in loc], 'o')
+    for j, ms in enumerate(matchscores):
+        for i, m in enumerate(ms[:, 0]):
+                if m > 0:
+                    plt.plot([locs[j][i][0] + sum(shapes[:j, 1]), locs[j+1][m][0] + sum(shapes[:j+1, 1])], [locs[j][i][1]+rowsmax, locs[j+1][m][1]+rowsmax], 'c')
+                    plt.axis('off')
+
+
 
 
 

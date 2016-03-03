@@ -191,25 +191,7 @@ def plot_matches(im1, im2, locs1, locs2, matchscores, show_below=True):
                 plt.plot([locs1[i][1], locs2[m][1] + cols1], [locs1[i][0], locs2[m][0]], 'c')
                 plt.axis('off')
 
-def plot_matches3(im1, im2, locs1, locs2, matchscores, show_below=True):
-    """ Show a figure with lines joining the accepted matches
-    input: im1,im2 (images as arrays), locs1,locs2 (feature locations),
-    matchscores (as output from 'match()'),
-    show_below (if images should be shown below matches). """
-    im3 = appendimages(im1, im2)
-    cols1 = im1.shape[1]
-    rowsmax = np.maximum(im1.shape[0], im2.shape[0])
-    plt.plot([p[0] for p in locs1], [p[1] for p in locs1], 'o')
-    plt.plot([p[0]+cols1 for p in locs2], [p[1] for p in locs2], 'o')
-    if show_below:
-        im3 = np.vstack((im3, im3, im3))
-        plt.imshow(im3)
-        for i, m in enumerate(matchscores):
-            if m > 0:
-                plt.plot([locs1[i][0], locs2[m][0] + cols1], [locs1[i][1]+rowsmax, locs2[m][1]+rowsmax], 'c')
-                plt.axis('off')
 
-''' -- SIFT scale invariant feature transform --
-http://en.wikipedia.org/wiki/Scale-invariant_feature_transform
-'''
+
+
 

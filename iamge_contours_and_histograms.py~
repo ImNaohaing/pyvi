@@ -1,0 +1,38 @@
+from PIL import Image
+from pylab import *
+from scipy.ndimage import filters
+
+#read iamge to array
+im = array(Image.open('shuicaili.jpg').convert('L'))
+m,n = im.shape[0:2]
+print im
+#create a new figure
+#figure()
+
+#dont use colors
+gray()
+spectral()
+
+#show contours with origin upper left corner
+#contour(im, origin='image')
+
+#axis('equal')
+#axis('off')
+
+#im2 = zeros(im.shape)
+#for i in range(3):
+#	im2[:,:,i] = filters.gaussian_filter(im[:,:,i] ,5)
+#im2 = uint8(im2)
+
+imx = zeros(im.shape)
+imy = zeros(im.shape)
+
+filters.sobel(im,1,imx)
+filters.sobel(im,0,imy)
+
+magnitude = sqrt(imx**2 + imy**2)
+magnitude = 255 - magnitude
+
+imshow(magnitude.reshape(m,n))
+
+show() 

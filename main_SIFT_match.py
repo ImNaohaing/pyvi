@@ -32,6 +32,6 @@ matchscores = sift.match_twosided(d1, d2)
 print matchscores
 plt.figure()
 plt.gray()
-harris.plot_matches3(im1, im2, l1, l2, matchscores[:, 0])
+sift.plot_matches3(im1, im2, l1, l2, matchscores[:, 0])
 plt.show()
 
